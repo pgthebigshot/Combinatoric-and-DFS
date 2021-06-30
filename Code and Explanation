@@ -1,0 +1,85 @@
+Three Steps -
+1) Try to understand the formula i.e LRcomb(L+R,L) based on combinations from Most votes!
+2) Through DFS find all the size of subtrees with calculating the combinations of it
+3) Apply Modular inverse to find the combinations ( I have calculated all the factorials(which I have to divide) and at the end I have found the inverse of that, so as to save the time complexity!)
+
+class Solution {
+	
+    long fac[],inv_fac=1,tot_ways;
+    int mod=1000000007;
+    
+    public int waysToBuildRooms(int[] pr) {
+    	
+    	int i,j,n=pr.length;
+    	
+    	fac=new long[n];
+    	
+        fac[0]=1;
+    	fac[1]=1;
+    	
+    	for(i=2;i<n;i++)
+    		fac[i]=i*fac[i-1]%mod;
+    	
+    	List<Integer> adj[]=new ArrayList[n];
+    	
+    	for(i=0;i<n;i++)
+    		adj[i]=new ArrayList<>();
+    	
+    	for(i=1;i<n;i++)
+    		adj[pr[i]].add(i);
+    	
+    	dfs(0,adj);
+    	
+    	inv_fac=power((int)inv_fac,(int)mod-2,(int)mod); //finding the inverse at the end (it reduces from 1300ms to 130ms!!!) 
+    	
+		return (int)(tot_ways*inv_fac%mod);
+    }
+    
+	int[] dfs(int ver,List<Integer> adj[])
+	{
+        int noOfSubTree[];
+        
+        long ways=1;
+        int countOfSubtree=0;
+		
+        for(Integer children : adj[ver])
+		{
+            
+        	if(adj[children].size()==0)
+                 noOfSubTree=new int[]{1,1};
+            else
+                noOfSubTree=dfs(children,adj);
+            
+            inv_fac=(inv_fac*fac[countOfSubtree])%mod*fac[noOfSubTree[1]]%mod;
+            
+            ways=((ways*noOfSubTree[0])%mod*fac[countOfSubtree+noOfSubTree[1]])%mod;
+            
+            countOfSubtree+=noOfSubTree[1];
+		}
+        tot_ways=ways;
+        return new int[]{(int)ways,countOfSubtree+1};
+	}
+	
+    static int power(int x, int y, int m)
+	{
+		if (y == 0)
+			return 1;
+		
+		int p = power(x, y / 2, m) % m;
+		
+		p = (int)((p * (long)p) % m);
+		
+		if (y % 2 == 0)
+			return p;
+		else
+			return (int)((x * (long)p) % m);
+	}
+    
+}
+It's not impossible to understand it if I have understood it then you can too :))
+From where I have understood it!!
+-> https://www.youtube.com/watch?v=MGKLPpR6NKI&ab_channel=HappyCoding
+
+
+
+Best of Luck!
